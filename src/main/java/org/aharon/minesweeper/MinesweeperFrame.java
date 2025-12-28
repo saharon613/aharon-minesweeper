@@ -71,10 +71,10 @@ class MinesweeperFrame extends JFrame {
 
         JPanel topPanel = new JPanel(new BorderLayout());
         JPanel infoPanel = new JPanel(new FlowLayout());
+        topPanel.add(infoPanel, BorderLayout.CENTER);
         infoPanel.add(flagLabel);
         infoPanel.add(resetButton);
         infoPanel.add(timerLabel);
-        topPanel.add(infoPanel, BorderLayout.CENTER);
 
         add(topPanel, BorderLayout.NORTH);
         add(boardPanel, BorderLayout.CENTER);
