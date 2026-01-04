@@ -200,7 +200,7 @@ class Minesweeper {
 
                 for (int di = -1; di <= 1; di++) {
                     for (int dj = -1; dj <= 1; dj++) {
-                        if (di == 0 && dj == 0) continue;
+                        if (di == 0 && dj == 0) { continue; }
 
                         int ni = i + di;
                         int nj = j + dj;
@@ -219,7 +219,7 @@ class Minesweeper {
                 if (hiddenCount + flaggedCount == cell.getAdjacentMines()) {
                     for (int di = -1; di <= 1; di++) {
                         for (int dj = -1; dj <= 1; dj++) {
-                            if (di == 0 && dj == 0) continue;
+                            if (di == 0 && dj == 0) { continue; }
 
                             int ni = i + di;
                             int nj = j + dj;
@@ -251,7 +251,7 @@ class Minesweeper {
 
                 for (int di = -1; di <= 1; di++) {
                     for (int dj = -1; dj <= 1; dj++) {
-                        if (di == 0 && dj == 0) continue;
+                        if (di == 0 && dj == 0) { continue; }
 
                         int ni = i + di;
                         int nj = j + dj;
@@ -265,7 +265,7 @@ class Minesweeper {
                 if (flaggedCount == cell.getAdjacentMines()) {
                     for (int di = -1; di <= 1; di++) {
                         for (int dj = -1; dj <= 1; dj++) {
-                            if (di == 0 && dj == 0) continue;
+                            if (di == 0 && dj == 0) { continue; }
 
                             int ni = i + di;
                             int nj = j + dj;
