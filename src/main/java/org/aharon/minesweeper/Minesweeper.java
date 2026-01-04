@@ -12,16 +12,16 @@ class Minesweeper {
     private boolean gameWon;
     private int cellsRevealed;
     private int flagCount;
+    private boolean firstClick;
 
     public Minesweeper() {
         board = new Cell[BOARD_SIZE][BOARD_SIZE];
         initializeBoard();
-        placeMines();
-        calculateAdjacentMines();
         gameOver = false;
         gameWon = false;
         cellsRevealed = 0;
         flagCount = 0;
+        firstClick = true;
     }
 
     private void initializeBoard() {
@@ -32,15 +32,14 @@ class Minesweeper {
         }
     }
 
-    private void placeMines() {
+    private void placeMines(int excludeRow, int excludeCol) {
         Random rand = new Random();
         int minesPlaced = 0;
 
         while (minesPlaced < NUM_MINES) {
             int row = rand.nextInt(BOARD_SIZE);
             int col = rand.nextInt(BOARD_SIZE);
-
-            if (!board[row][col].isMine()) {
+            if (!board[row][col].isMine() && !(row == excludeRow && col == excludeCol)) {
                 board[row][col].setMine(true);
                 minesPlaced++;
             }
@@ -79,6 +78,12 @@ class Minesweeper {
     public boolean reveal(int row, int col) {
         if (gameOver || gameWon || !isValidCell(row, col)) {
             return false;
+        }
+
+        if (firstClick) {
+            placeMines(row, col);
+            calculateAdjacentMines();
+            firstClick = false;
         }
 
         Cell cell = board[row][col];
