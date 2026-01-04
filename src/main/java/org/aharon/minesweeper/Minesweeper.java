@@ -12,16 +12,16 @@ class Minesweeper {
     private boolean gameWon;
     private int cellsRevealed;
     private int flagCount;
+    private boolean firstClick;
 
     public Minesweeper() {
         board = new Cell[BOARD_SIZE][BOARD_SIZE];
         initializeBoard();
-        placeMines();
-        calculateAdjacentMines();
         gameOver = false;
         gameWon = false;
         cellsRevealed = 0;
         flagCount = 0;
+        firstClick = true;
     }
 
     private void initializeBoard() {
@@ -32,7 +32,7 @@ class Minesweeper {
         }
     }
 
-    private void placeMines() {
+    private void placeMines(int excludeRow, int excludeCol) {
         Random rand = new Random();
         int minesPlaced = 0;
 
@@ -40,7 +40,8 @@ class Minesweeper {
             int row = rand.nextInt(BOARD_SIZE);
             int col = rand.nextInt(BOARD_SIZE);
 
-            if (!board[row][col].isMine()) {
+            // Don't place mine on the first clicked cell
+            if (!board[row][col].isMine() && !(row == excludeRow && col == excludeCol)) {
                 board[row][col].setMine(true);
                 minesPlaced++;
             }
@@ -79,6 +80,13 @@ class Minesweeper {
     public boolean reveal(int row, int col) {
         if (gameOver || gameWon || !isValidCell(row, col)) {
             return false;
+        }
+
+        // Handle first click - place mines avoiding this cell and neighbors
+        if (firstClick) {
+            placeMines(row, col);
+            calculateAdjacentMines();
+            firstClick = false;
         }
 
         Cell cell = board[row][col];
@@ -137,11 +145,9 @@ class Minesweeper {
         }
 
         if (cell.isFlagged()) {
-            // always allow removing a flag
             cell.setFlagged(false);
             flagCount--;
         } else if (flagCount < MAX_FLAGS) {
-            // only allow placing if under limit
             cell.setFlagged(true);
             flagCount++;
         }
@@ -178,5 +184,102 @@ class Minesweeper {
 
     public int getNumMines() {
         return NUM_MINES;
+    }
+
+    public void autoFlag() {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                Cell cell = board[i][j];
+
+                if (!cell.isRevealed() || cell.getAdjacentMines() == 0) {
+                    continue;
+                }
+
+                int hiddenCount = 0;
+                int flaggedCount = 0;
+
+                for (int di = -1; di <= 1; di++) {
+                    for (int dj = -1; dj <= 1; dj++) {
+                        if (di == 0 && dj == 0) continue;
+
+                        int ni = i + di;
+                        int nj = j + dj;
+
+                        if (isValidCell(ni, nj)) {
+                            Cell neighbor = board[ni][nj];
+                            if (!neighbor.isRevealed() && !neighbor.isFlagged()) {
+                                hiddenCount++;
+                            } else if (neighbor.isFlagged()) {
+                                flaggedCount++;
+                            }
+                        }
+                    }
+                }
+
+                if (hiddenCount + flaggedCount == cell.getAdjacentMines()) {
+                    for (int di = -1; di <= 1; di++) {
+                        for (int dj = -1; dj <= 1; dj++) {
+                            if (di == 0 && dj == 0) continue;
+
+                            int ni = i + di;
+                            int nj = j + dj;
+
+                            if (isValidCell(ni, nj)) {
+                                Cell neighbor = board[ni][nj];
+                                if (!neighbor.isRevealed() && !neighbor.isFlagged() && flagCount < MAX_FLAGS) {
+                                    neighbor.setFlagged(true);
+                                    flagCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void autoReveal() {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                Cell cell = board[i][j];
+
+                if (!cell.isRevealed() || cell.getAdjacentMines() == 0) {
+                    continue;
+                }
+
+                int flaggedCount = 0;
+
+                for (int di = -1; di <= 1; di++) {
+                    for (int dj = -1; dj <= 1; dj++) {
+                        if (di == 0 && dj == 0) continue;
+
+                        int ni = i + di;
+                        int nj = j + dj;
+
+                        if (isValidCell(ni, nj) && board[ni][nj].isFlagged()) {
+                            flaggedCount++;
+                        }
+                    }
+                }
+
+                if (flaggedCount == cell.getAdjacentMines()) {
+                    for (int di = -1; di <= 1; di++) {
+                        for (int dj = -1; dj <= 1; dj++) {
+                            if (di == 0 && dj == 0) continue;
+
+                            int ni = i + di;
+                            int nj = j + dj;
+
+                            if (isValidCell(ni, nj)) {
+                                Cell neighbor = board[ni][nj];
+                                if (!neighbor.isRevealed() && !neighbor.isFlagged()) {
+                                    reveal(ni, nj);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
