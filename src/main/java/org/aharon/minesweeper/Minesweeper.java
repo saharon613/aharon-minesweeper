@@ -187,53 +187,11 @@ class Minesweeper {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 Cell cell = board[i][j];
+                if (!cell.isRevealed() || cell.getAdjacentMines() == 0) continue;
 
-                if (!cell.isRevealed() || cell.getAdjacentMines() == 0) {
-                    continue;
-                }
-
-                int hiddenCount = 0;
-                int flaggedCount = 0;
-
-                for (int di = -1; di <= 1; di++) {
-                    for (int dj = -1; dj <= 1; dj++) {
-                        if (di == 0 && dj == 0) {
-                            continue;
-                        }
-
-                        int ni = i + di;
-                        int nj = j + dj;
-
-                        if (isValidCell(ni, nj)) {
-                            Cell neighbor = board[ni][nj];
-                            if (!neighbor.isRevealed() && !neighbor.isFlagged()) {
-                                hiddenCount++;
-                            } else if (neighbor.isFlagged()) {
-                                flaggedCount++;
-                            }
-                        }
-                    }
-                }
-
-                if (hiddenCount + flaggedCount == cell.getAdjacentMines()) {
-                    for (int di = -1; di <= 1; di++) {
-                        for (int dj = -1; dj <= 1; dj++) {
-                            if (di == 0 && dj == 0) {
-                                continue;
-                            }
-
-                            int ni = i + di;
-                            int nj = j + dj;
-
-                            if (isValidCell(ni, nj)) {
-                                Cell neighbor = board[ni][nj];
-                                if (!neighbor.isRevealed() && !neighbor.isFlagged() && flagCount < MAX_FLAGS) {
-                                    neighbor.setFlagged(true);
-                                    flagCount++;
-                                }
-                            }
-                        }
-                    }
+                int[] counts = countNeighbors(i, j);
+                if (counts[0] + counts[1] == cell.getAdjacentMines()) {
+                    flagHiddenNeighbors(i, j);
                 }
             }
         }
@@ -243,46 +201,55 @@ class Minesweeper {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 Cell cell = board[i][j];
+                if (!cell.isRevealed() || cell.getAdjacentMines() == 0) continue;
 
-                if (!cell.isRevealed() || cell.getAdjacentMines() == 0) {
-                    continue;
+                int[] counts = countNeighbors(i, j);
+                if (counts[1] == cell.getAdjacentMines()) {
+                    revealHiddenNeighbors(i, j);
                 }
+            }
+        }
+    }
 
-                int flaggedCount = 0;
+    private int[] countNeighbors(int row, int col) {
+        int hidden = 0, flagged = 0;
+        for (int di = -1; di <= 1; di++) {
+            for (int dj = -1; dj <= 1; dj++) {
+                if (di == 0 && dj == 0) continue;
+                int ni = row + di, nj = col + dj;
+                if (isValidCell(ni, nj)) {
+                    Cell n = board[ni][nj];
+                    if (n.isFlagged()) flagged++;
+                    else if (!n.isRevealed()) hidden++;
+                }
+            }
+        }
+        return new int[]{hidden, flagged};
+    }
 
-                for (int di = -1; di <= 1; di++) {
-                    for (int dj = -1; dj <= 1; dj++) {
-                        if (di == 0 && dj == 0) {
-                            continue;
-                        }
-
-                        int ni = i + di;
-                        int nj = j + dj;
-
-                        if (isValidCell(ni, nj) && board[ni][nj].isFlagged()) {
-                            flaggedCount++;
-                        }
+    private void flagHiddenNeighbors(int row, int col) {
+        for (int di = -1; di <= 1; di++) {
+            for (int dj = -1; dj <= 1; dj++) {
+                if (di == 0 && dj == 0) continue;
+                int ni = row + di, nj = col + dj;
+                if (isValidCell(ni, nj)) {
+                    Cell n = board[ni][nj];
+                    if (!n.isRevealed() && !n.isFlagged() && flagCount < MAX_FLAGS) {
+                        n.setFlagged(true);
+                        flagCount++;
                     }
                 }
+            }
+        }
+    }
 
-                if (flaggedCount == cell.getAdjacentMines()) {
-                    for (int di = -1; di <= 1; di++) {
-                        for (int dj = -1; dj <= 1; dj++) {
-                            if (di == 0 && dj == 0) {
-                                continue;
-                            }
-
-                            int ni = i + di;
-                            int nj = j + dj;
-
-                            if (isValidCell(ni, nj)) {
-                                Cell neighbor = board[ni][nj];
-                                if (!neighbor.isRevealed() && !neighbor.isFlagged()) {
-                                    reveal(ni, nj);
-                                }
-                            }
-                        }
-                    }
+    private void revealHiddenNeighbors(int row, int col) {
+        for (int di = -1; di <= 1; di++) {
+            for (int dj = -1; dj <= 1; dj++) {
+                if (di == 0 && dj == 0) continue;
+                int ni = row + di, nj = col + dj;
+                if (isValidCell(ni, nj) && !board[ni][nj].isRevealed() && !board[ni][nj].isFlagged()) {
+                    reveal(ni, nj);
                 }
             }
         }
