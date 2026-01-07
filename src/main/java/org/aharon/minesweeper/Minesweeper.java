@@ -214,7 +214,8 @@ class Minesweeper {
     }
 
     private int[] countNeighbors(int row, int col) {
-        int hidden = 0, flagged = 0;
+        int hidden = 0;
+        int flagged = 0;
         for (int di = -1; di <= 1; di++) {
             for (int dj = -1; dj <= 1; dj++) {
                 if (di == 0 && dj == 0) {
@@ -224,7 +225,7 @@ class Minesweeper {
                 int nj = col + dj;
                 if (isValidCell(ni, nj)) {
                     Cell n = board[ni][nj];
-                    if (n.isFlagged()) flagged++;
+                    if (n.isFlagged()) { flagged++; }
                     else if (!n.isRevealed()) { hidden++; }
                 }
             }
