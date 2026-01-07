@@ -279,4 +279,68 @@ class Minesweeper {
             }
         }
     }
+
+    public Minesweeper deepCopy() {
+        Minesweeper copy = new Minesweeper();
+
+        copy.gameOver = this.gameOver;
+        copy.gameWon = this.gameWon;
+        copy.cellsRevealed = this.cellsRevealed;
+        copy.flagCount = this.flagCount;
+        copy.firstClick = this.firstClick;
+
+        copy.board = new Cell[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                copy.board[i][j] = this.board[i][j].deepCopy();
+            }
+        }
+
+        return copy;
+    }
+
+    public double[] toInput() {
+        double[] input = new double[BOARD_SIZE * BOARD_SIZE];
+        int index = 0;
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                Cell cell = board[i][j];
+
+                if (cell.isFlagged()) {
+                    input[index] = 1.0;
+                } else if (cell.isRevealed()) {
+                    int adjacentMines = cell.getAdjacentMines();
+                    input[index] = (adjacentMines + 1) * 0.1;
+                } else {
+                    input[index] = 0.0;
+                }
+
+                index++;
+            }
+        }
+
+        return input;
+    }
+
+    public double[] toOutput() {
+        double[] output = new double[BOARD_SIZE * BOARD_SIZE];
+        int index = 0;
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                Cell cell = board[i][j];
+
+                if (cell.isMine()) {
+                    output[index] = 1.0;
+                } else {
+                    output[index] = 0.0;
+                }
+
+                index++;
+            }
+        }
+
+        return output;
+    }
 }
