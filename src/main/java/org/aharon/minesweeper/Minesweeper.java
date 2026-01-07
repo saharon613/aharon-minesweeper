@@ -225,8 +225,11 @@ class Minesweeper {
                 int nj = col + dj;
                 if (isValidCell(ni, nj)) {
                     Cell n = board[ni][nj];
-                    if (n.isFlagged()) { flagged++; }
-                    else if (!n.isRevealed()) { hidden++; }
+                    if (n.isFlagged()) {
+                        flagged++;
+                    } else if (!n.isRevealed()) {
+                        hidden++;
+                    }
                 }
             }
         }
