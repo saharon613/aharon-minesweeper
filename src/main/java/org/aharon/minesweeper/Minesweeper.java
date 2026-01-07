@@ -39,8 +39,6 @@ class Minesweeper {
         while (minesPlaced < NUM_MINES) {
             int row = rand.nextInt(BOARD_SIZE);
             int col = rand.nextInt(BOARD_SIZE);
-
-            // Don't place mine on the first clicked cell
             if (!board[row][col].isMine() && !(row == excludeRow && col == excludeCol)) {
                 board[row][col].setMine(true);
                 minesPlaced++;
@@ -82,7 +80,6 @@ class Minesweeper {
             return false;
         }
 
-        // Handle first click - place mines avoiding this cell and neighbors
         if (firstClick) {
             placeMines(row, col);
             calculateAdjacentMines();
