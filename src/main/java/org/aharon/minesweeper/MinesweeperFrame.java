@@ -69,11 +69,19 @@ class MinesweeperFrame extends JFrame {
         JButton resetButton = new JButton("New Game");
         resetButton.addActionListener(e -> resetGame());
 
+        JButton autoFlagButton = new JButton("AutoFlag");
+        autoFlagButton.addActionListener(e -> handleAutoFlag());
+
+        JButton autoRevealButton = new JButton("AutoReveal");
+        autoRevealButton.addActionListener(e -> handleAutoReveal());
+
         JPanel topPanel = new JPanel(new BorderLayout());
         JPanel infoPanel = new JPanel(new FlowLayout());
         topPanel.add(infoPanel, BorderLayout.CENTER);
         infoPanel.add(flagLabel);
         infoPanel.add(resetButton);
+        infoPanel.add(autoFlagButton);
+        infoPanel.add(autoRevealButton);
         infoPanel.add(timerLabel);
 
         add(topPanel, BorderLayout.NORTH);
@@ -94,6 +102,18 @@ class MinesweeperFrame extends JFrame {
         game.toggleFlag(row, col);
         updateBoard();
         updateFlagCounter();
+    }
+
+    private void handleAutoFlag() {
+        game.autoFlag();
+        updateBoard();
+        updateFlagCounter();
+    }
+
+    private void handleAutoReveal() {
+        game.autoReveal();
+        updateBoard();
+        updateStatus();
     }
 
     private void updateBoard() {
@@ -152,10 +172,14 @@ class MinesweeperFrame extends JFrame {
             statusLabel.setText("Game Over! You hit a mine!");
             statusLabel.setForeground(Color.RED);
             timer.stop();
+            JOptionPane.showMessageDialog(this, "Game Over! You hit a mine!", "Defeat",
+                    JOptionPane.ERROR_MESSAGE);
         } else if (game.isGameWon()) {
             statusLabel.setText("Congratulations! You won!");
             statusLabel.setForeground(Color.GREEN);
             timer.stop();
+            JOptionPane.showMessageDialog(this, "Congratulations! You won!", "Victory!",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

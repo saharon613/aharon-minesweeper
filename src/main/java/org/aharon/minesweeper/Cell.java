@@ -44,4 +44,13 @@ class Cell {
     public void setAdjacentMines(int adjacentMines) {
         this.adjacentMines = adjacentMines;
     }
+
+    public Cell deepCopy() {
+        Cell copy = new Cell();
+        copy.mine = this.mine;
+        copy.revealed = this.revealed;
+        copy.flagged = this.flagged;
+        copy.adjacentMines = this.adjacentMines;
+        return copy;
+    }
 }
