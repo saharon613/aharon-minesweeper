@@ -3,8 +3,8 @@ package org.aharon.minesweeper;
 import java.util.Random;
 
 class Minesweeper {
-    private static final int BOARD_SIZE = 9;
-    private static final int NUM_MINES = 10;
+    private static final int BOARD_SIZE = 5;
+    private static final int NUM_MINES = 3;
     private static final int MAX_FLAGS = NUM_MINES;
 
     private Cell[][] board;
