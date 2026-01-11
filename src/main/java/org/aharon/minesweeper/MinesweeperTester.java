@@ -30,7 +30,7 @@ public class MinesweeperTester {
         int gamesLost = 0;
 
         for (int gameNum = 1; gameNum <= NUM_GAMES; gameNum++) {
-            boolean won = playGameWithNN();
+            boolean won = playGameWithNn();
 
             if (won) {
                 gamesWon++;
@@ -59,7 +59,7 @@ public class MinesweeperTester {
         }
     }
 
-    private boolean playGameWithNN() {
+    private boolean playGameWithNn() {
         // Step 2: Create new game
         Minesweeper game = new Minesweeper();
 
@@ -113,9 +113,9 @@ public class MinesweeperTester {
                 Cell cell = game.getCell(i, j);
 
                 // If prediction is high and cell is not revealed or flagged
-                if (predictions[index] >= FLAG_THRESHOLD &&
-                        !cell.isRevealed() &&
-                        !cell.isFlagged()) {
+                if (predictions[index] >= FLAG_THRESHOLD
+                        && !cell.isRevealed()
+                        && !cell.isFlagged()) {
                     game.toggleFlag(i, j);
                 }
             }
