@@ -1,5 +1,6 @@
 package org.aharon.minesweeper;
 
+import basicneuralnetwork.NeuralNetwork;
 import java.io.File;
 import java.util.Random;
 
@@ -25,7 +26,8 @@ public class MinesweeperTrainer {
                 network = NeuralNetwork.readFromFile(MODEL_FILE);
                 System.out.println("Loaded existing model from " + MODEL_FILE);
             } catch (Exception e) {
-                System.out.println("Error loading model, creating new one: " + e.getMessage());
+                System.out.println("Error loading model, creating new one:");
+                e.printStackTrace();
                 network = new NeuralNetwork(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE);
             }
         } else {
@@ -62,7 +64,8 @@ public class MinesweeperTrainer {
             System.out.printf("Final stats - Games won: %d, Games lost: %d, Win rate: %.2f%%%n",
                     gamesWon, gamesLost, (double) gamesWon / NUM_GAMES * 100);
         } catch (Exception e) {
-            System.err.println("Error saving model: " + e.getMessage());
+            System.err.println("Error saving model:");
+            e.printStackTrace();
         }
     }
 

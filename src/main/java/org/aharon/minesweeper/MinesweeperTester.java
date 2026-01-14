@@ -1,5 +1,9 @@
 package org.aharon.minesweeper;
 
+import basicneuralnetwork.NeuralNetwork;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MinesweeperTester {
@@ -19,7 +23,8 @@ public class MinesweeperTester {
             network = NeuralNetwork.readFromFile(MODEL_FILE);
             System.out.println("Loaded trained model from " + MODEL_FILE);
         } catch (Exception e) {
-            System.err.println("Error loading model: " + e.getMessage());
+            System.err.println("Error loading model from " + MODEL_FILE);
+            e.printStackTrace();  // prints the stack trace
             System.err.println("Make sure you've trained the model first by running MinesweeperTrainer");
             System.exit(1);
         }
@@ -30,7 +35,7 @@ public class MinesweeperTester {
         int gamesLost = 0;
 
         for (int gameNum = 1; gameNum <= NUM_GAMES; gameNum++) {
-            boolean won = playGameWithNn();
+            boolean won = playGameWithNN();
 
             if (won) {
                 gamesWon++;
@@ -59,7 +64,7 @@ public class MinesweeperTester {
         }
     }
 
-    private boolean playGameWithNn() {
+    private boolean playGameWithNN() {
         // Step 2: Create new game
         Minesweeper game = new Minesweeper();
 
@@ -78,7 +83,7 @@ public class MinesweeperTester {
             double[] input = game.toInput();
 
             // Step 5: Get neural network prediction
-            double[] output = network.predict(input);
+            double[] output = network.guess(input);
 
             // Step 6: Flag cells where probability >= 0.9
             int flagsBefore = game.getFlagCount();
@@ -113,9 +118,9 @@ public class MinesweeperTester {
                 Cell cell = game.getCell(i, j);
 
                 // If prediction is high and cell is not revealed or flagged
-                if (predictions[index] >= FLAG_THRESHOLD
-                        && !cell.isRevealed()
-                        && !cell.isFlagged()) {
+                if (predictions[index] >= FLAG_THRESHOLD &&
+                        !cell.isRevealed() &&
+                        !cell.isFlagged()) {
                     game.toggleFlag(i, j);
                 }
             }
@@ -123,28 +128,22 @@ public class MinesweeperTester {
     }
 
     private int[] getRandomUnrevealedCell(Minesweeper game) {
-        // Find all unrevealed, unflagged cells
-        int[][] available = new int[BOARD_SIZE * BOARD_SIZE][2];
-        int count = 0;
+        List<int[]> available = new ArrayList<>();
 
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 Cell cell = game.getCell(i, j);
                 if (!cell.isRevealed() && !cell.isFlagged()) {
-                    available[count][0] = i;
-                    available[count][1] = j;
-                    count++;
+                    available.add(new int[]{i, j});
                 }
             }
         }
 
-        if (count == 0) {
+        if (available.isEmpty()) {
             return null;
         }
 
-        // Pick random cell from available
-        int index = random.nextInt(count);
-        return available[index];
+        return available.get(random.nextInt(available.size()));
     }
 
     public static void main(String[] args) {
